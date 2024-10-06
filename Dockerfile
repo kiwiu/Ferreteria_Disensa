@@ -4,6 +4,12 @@ FROM php:8.0.9-apache
 # Instala las extensiones de PHP necesarias, incluyendo pdo_mysql
 RUN docker-php-ext-install pdo pdo_mysql
 
+# Instalar GD y otras extensiones necesarias
+RUN apt-get update && \
+    apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd
+
 # Habilita mod_rewrite si es necesario
 RUN a2enmod rewrite
 
