@@ -1,20 +1,18 @@
-# Establecer la imagen base de PHP con Apache
-FROM php:8.2-apache
+# Usa una imagen base de PHP con Apache
+FROM php:8.1-apache
 
-# Instalar extensiones de PHP necesarias para MySQL
-RUN docker-php-ext-install pdo pdo_mysql mysqli
-
-# Copiar los archivos de la aplicación al contenedor
+# Copia el código fuente de la aplicación a la carpeta donde Apache buscará los archivos
 COPY . /var/www/html/
 
-# Asignar permisos correctos
-RUN chown -R www-data:www-data /var/www/html
+# Instala las extensiones necesarias de PHP (agrega más si tu aplicación lo requiere)
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Exponer el puerto 80 para acceder a la aplicación web
+# Establece los permisos correctos para los archivos
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Exponer el puerto 80 para que Apache sea accesible
 EXPOSE 80
 
-# Habilitar el módulo de reescritura de Apache (opcional si usas URLs amigables)
-RUN a2enmod rewrite
-
-# Configuración de Apache (opcional si tienes un archivo .htaccess)
-COPY ./apache-config.conf /etc/apache2/sites-available/000-default.conf
+# Iniciar Apache en modo foreground
+CMD ["apache2-foreground"]
