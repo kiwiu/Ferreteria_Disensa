@@ -1,7 +1,10 @@
 # Usa la imagen base de PHP con Apache
 FROM php:8.0.9-apache
 
-# Habilita mod_rewrite si lo necesitas para las rutas amigables
+# Instala las extensiones de PHP necesarias, incluyendo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Habilita mod_rewrite si es necesario
 RUN a2enmod rewrite
 
 # Copia todo el contenido de tu proyecto al directorio raíz de Apache
