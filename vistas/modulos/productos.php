@@ -39,7 +39,7 @@ if($_SESSION["perfil"] == "Vendedor"){
 
       <div class="box-header with-border">
   
-        <button class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarProducto">
+        <button class="btn btn-danger" data-toggle="modal" data-target="#modalAgregarProducto">
           
           Agregar producto
 

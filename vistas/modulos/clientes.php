@@ -40,7 +40,7 @@ if($_SESSION["perfil"] == "Especial"){
 
       <div class="box-header with-border">
   
-        <button class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarCliente">
+        <button class="btn btn-danger" data-toggle="modal" data-target="#modalAgregarCliente">
           
           Agregar cliente
 
