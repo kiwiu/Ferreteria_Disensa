@@ -40,33 +40,47 @@ class ModeloVentas{
 	REGISTRO DE VENTA
 	=============================================*/
 
-	static public function mdlIngresarVenta($tabla, $datos){
+static public function mdlIngresarVenta($tabla, $datos) {
+    
+    // Generar un código aleatorio entre 1000 y 9999
+    $codigo = rand(1000, 9999);
+    
+    // Verificar que el código sea único en la base de datos
+    $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) FROM $tabla WHERE codigo = :codigo");
+    $stmt->bindParam(":codigo", $codigo, PDO::PARAM_INT);
+    $stmt->execute();
+    $existe = $stmt->fetchColumn();
 
-		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(codigo, id_cliente, id_vendedor, productos, impuesto, neto, total, metodo_pago) VALUES (:codigo, :id_cliente, :id_vendedor, :productos, :impuesto, :neto, :total, :metodo_pago)");
+    // Si el código ya existe, generar uno nuevo
+    while ($existe > 0) {
+        $codigo = rand(1000, 9999);
+        $stmt->bindParam(":codigo", $codigo, PDO::PARAM_INT);
+        $stmt->execute();
+        $existe = $stmt->fetchColumn();
+    }
 
-		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_INT);
-		$stmt->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
-		$stmt->bindParam(":id_vendedor", $datos["id_vendedor"], PDO::PARAM_INT);
-		$stmt->bindParam(":productos", $datos["productos"], PDO::PARAM_STR);
-		$stmt->bindParam(":impuesto", $datos["impuesto"], PDO::PARAM_STR);
-		$stmt->bindParam(":neto", $datos["neto"], PDO::PARAM_STR);
-		$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
-		$stmt->bindParam(":metodo_pago", $datos["metodo_pago"], PDO::PARAM_STR);
+    // Ahora se puede insertar el registro con el código único
+    $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(codigo, id_cliente, id_vendedor, productos, impuesto, neto, total, metodo_pago) VALUES (:codigo, :id_cliente, :id_vendedor, :productos, :impuesto, :neto, :total, :metodo_pago)");
 
-		if($stmt->execute()){
+    $stmt->bindParam(":codigo", $codigo, PDO::PARAM_INT);
+    $stmt->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
+    $stmt->bindParam(":id_vendedor", $datos["id_vendedor"], PDO::PARAM_INT);
+    $stmt->bindParam(":productos", $datos["productos"], PDO::PARAM_STR);
+    $stmt->bindParam(":impuesto", $datos["impuesto"], PDO::PARAM_STR);
+    $stmt->bindParam(":neto", $datos["neto"], PDO::PARAM_STR);
+    $stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+    $stmt->bindParam(":metodo_pago", $datos["metodo_pago"], PDO::PARAM_STR);
 
-			return "ok";
+    if ($stmt->execute()) {
+        return "ok";
+    } else {
+        return "error";
+    }
 
-		}else{
+    $stmt->close();
+    $stmt = null;
+}
 
-			return "error";
-		
-		}
-
-		$stmt->close();
-		$stmt = null;
-
-	}
 
 	/*=============================================
 	EDITAR VENTA
